@@ -28,15 +28,15 @@ if __name__ == '__main__':
     if check_IP_active(target):
         print("Host %s is up, start scanning" % target)
         for port in ports:
-            src_port = RandShort()
-            p = IP(dst=target)/TCP(sport=src_port, dport=port, flags='S')
-            resp = sr1(p, timeout=10)
+            # src_port = RandShort()
+            resp = sr1(IP(dst=target)/TCP(sport=port,
+                                          dport=port, flags="S"), timeout=2000)
             if str(type(resp)) == "<type 'NoneType'>":
                 closed_ports += 1
             elif resp.haslayer(TCP):
                 if resp.getlayer(TCP).flags == 0x12:
                     send_rst = sr(IP(dst=target)/TCP(sport=src_port,
-                                                     dport=port, flags='AR'), timeout=10)
+                                                     dport=port, flags='AR'), timeout=2000)
                     open_ports.append(port)
                 elif resp.getlayer(TCP).flags == 0x14:
                     closed_ports += 1
